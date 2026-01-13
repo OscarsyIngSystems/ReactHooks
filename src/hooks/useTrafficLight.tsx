@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 
 
-
-
-
 const colors = {
     red: 'bg-red-500 animate-pulse',
     green: 'bg-green-500 animate-pulse',
@@ -11,10 +8,16 @@ const colors = {
 
 }
 
+
 // type TrafficLightColor = 'red' | 'green' | 'yellow';  este es una forma de hacerlo
 type TrafficLightColor = keyof typeof colors; // esta es mejor ya que si cambia el objeto de colors se ajusta el tipado
 
-export const TrafficLightWithEffect = () => {
+
+
+
+const useTrafficLight = () => {
+
+
 
 
     const [light, setLight] = useState<TrafficLightColor>('red')
@@ -25,6 +28,7 @@ export const TrafficLightWithEffect = () => {
     useEffect(() => {
 
         if (countDown === 0) {
+
             return
         }
         const intervalId = setInterval(() => {
@@ -51,6 +55,9 @@ export const TrafficLightWithEffect = () => {
 
         setCountDown(5)
 
+
+
+
         if (light == 'red') {
             setLight('green')
             return
@@ -75,30 +82,20 @@ export const TrafficLightWithEffect = () => {
 
 
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 flex items-center justify-center p-4">
-            <div className="flex flex-col items-center space-y-8">
+    return {
+        //props
+        countDown,
+        light,
+        colors,
 
-                <h1 className="text-white text-3xl font-thin">Semaforo con useEffect</h1>
-                <h2 className=" text-white text-xl" >CountDown {countDown}</h2>
+        //computed
+        porcentage: (countDown / 5) * 100
 
-                <div className="w-64 bg-gray-700 rounded-full h-2">
-                    <div className="bg-blue-500 rounded-full h-2 transition-all duration-1000 ease-linear"
-                        style={{
-                            width: `${(countDown / 5) * 100}%`
-                        }}
-                    >
+        //methods
 
-                    </div>
-
-                </div>
-
-                <div className={`w-32 h-32 ${light == 'red' ? colors.red : 'bg-gray-500'} rounded-full`}></div>
-                <div className={`w-32 h-32 ${light == 'yellow' ? colors.yellow : 'bg-gray-500'} rounded-full`}></div>
-                <div className={`w-32 h-32 ${light == 'green' ? colors.green : 'bg-gray-500'} rounded-full`}></div>
+    }
 
 
-            </div>
-        </div>
-    );
-};
+}
+
+export default useTrafficLight
