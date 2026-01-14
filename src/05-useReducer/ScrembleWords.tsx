@@ -86,12 +86,13 @@ export const ScrambleWords = () => {
 
         setErrorCounter(errorCounter + 1)
 
+        setGuess(' ')
 
-        console.log(errorCounter, 'errorCounter');
 
-        if (errorCounter == 2) {
+        if ((errorCounter + 1) == maxAllowErrors) {
             setIsGameOver(true)
         }
+        console.log(errorCounter, 'errorCounter');
 
 
 
