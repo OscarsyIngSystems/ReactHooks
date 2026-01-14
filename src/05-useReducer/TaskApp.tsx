@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import { Plus, Trash2, Check } from 'lucide-react';
 
@@ -6,34 +6,70 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getTaskInitialState, taskReducer } from './reducer/taskReducer';
 
-interface Todo {
-    id: number;
-    text: string;
-    completed: boolean;
-}
+
 
 export const TasksApp = () => {
-    const [todos, setTodos] = useState<Todo[]>([]);
+    // const [todos, setTodos] = useState<Todo[]>([]);
+    const [state, dispatch] = useReducer(taskReducer, getTaskInitialState())
+
+    const { todos } = state;
+
     const [inputValue, setInputValue] = useState('');
 
-    const addTodo = () => {
-        console.log('Agregar tarea', inputValue);
+    useEffect(() => {
+        localStorage.setItem('task-state', JSON.stringify(state))
+    }, [state])
 
+
+    const addTodo = () => {
+        if (inputValue.length === 0) return;
+
+        dispatch({ type: 'ADD_TODO', payload: inputValue })
+
+        // const newTodo: Todo = {
+        //     id: Date.now(),
+        //     text: inputValue.trim(),
+        //     completed: false
+        // }
+
+        // setTodos([...todos, newTodo])
+        // segunda opcion es usar los previos
+        // setTodos((prev) => [...prev, newTodo])
+
+        setInputValue(' ')
     };
 
     const toggleTodo = (id: number) => {
         console.log('Cambiar de true a false', id);
+        dispatch({ type: 'TOGGLE_TODO', payload: id })
+        // const upadteTodos = todos.map((todo) => {
+        //     if (todo.id === id) {
+        //         return { ...todo, completed: !todo.completed }
+
+        //     }
+        //     return todo
+
+
+        // })
+
+        // setTodos(upadteTodos)
 
     };
 
     const deleteTodo = (id: number) => {
         console.log('Eliminar tarea', id);
+        dispatch({ type: 'DELETE_TODO', payload: id })
+        // const updateTodos = todos.filter((todo) => todo.id !== id)
+        // setTodos(updateTodos)
 
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
-        console.log('Presiono enter');
+        if (e.key == 'Enter') {
+            addTodo()
+        }
 
     };
 
@@ -119,8 +155,8 @@ export const TasksApp = () => {
                                     <div
                                         key={todo.id}
                                         className={`flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 ${todo.completed
-                                                ? 'bg-slate-50 border-slate-200'
-                                                : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                                            ? 'bg-slate-50 border-slate-200'
+                                            : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
                                             }`}
                                     >
                                         <Checkbox
@@ -130,8 +166,8 @@ export const TasksApp = () => {
                                         />
                                         <span
                                             className={`flex-1 transition-all duration-200 ${todo.completed
-                                                    ? 'text-slate-500 line-through'
-                                                    : 'text-slate-800'
+                                                ? 'text-slate-500 line-through'
+                                                : 'text-slate-800'
                                                 }`}
                                         >
                                             {todo.text}
